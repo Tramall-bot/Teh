@@ -1,6 +1,15 @@
 ﻿#include <windows.h>
 #include <tchar.h>
 
+/*
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
+	LPSTR lpCmdLine, int nCmdShow)
+{
+	MessageBox(NULL, L"Hello, Win32 world!", L"Hello from Message Box", MB_OK);
+	return 0;
+}
+*/
+
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 TCHAR WinName[] = _T("MainFrame");
 int APIENTRY _tWinMain(HINSTANCE This, // Дескрипотор текущего приложения
