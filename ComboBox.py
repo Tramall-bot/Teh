@@ -47,7 +47,7 @@ class Journal(QWidget):
             if self.table.item(self.combobox.currentIndex(), i).text() =="":
                 continue
             else:
-                if int(self.table.item(self.combobox.currentIndex(), i).text()) >= 2:
+                if int(self.table.item(self.combobox.currentIndex(), i).text()) >= 2 and int(self.table.item(self.combobox.currentIndex(), i).text()) < 6:
                     sum += int(self.table.item(self.combobox.currentIndex(), i).text())
                     count += 1
         if count == 0:
