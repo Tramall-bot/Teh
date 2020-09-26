@@ -8,6 +8,7 @@ class Journal(QWidget):
         super().__init__(*args, **kwargs)
         self.initUi()
         self.combobox.currentIndexChanged.connect(self.display)
+        self.table.cellChanged.connect(self.redraw)
 
     def initUi(self):
         self.resize(self.parent().size())
@@ -21,9 +22,9 @@ class Journal(QWidget):
         self.line.move(340, 70)
         self.combobox.move(340,40)
         self.line.setDisabled(True)
-        
+
     def settable(self):
-        for i in range(self.table.rowCount()):
+        for i in range(self.table.rowCount()-1):
             self.table.setItem(i, 0, QTableWidgetItem("Иванов"+str(i+1)))
             for j in range(self.table.columnCount()-1):
                 self.table.setItem(i, j+1, QTableWidgetItem(str(int(random.uniform(2,6)))))
@@ -31,18 +32,38 @@ class Journal(QWidget):
 
 
     def setcombobox(self):
-        for i in range(self.table.rowCount()):
+        for i in range(self.table.rowCount()-1):
             self.combobox.addItem(self.table.item(i, 0).text())
 
     def display(self,):
         self.line.setText(self.calculate())
 
     def calculate(self):
-        sum=0
+        sum = 0
+        count = 0
         for i in range(1, self.table.columnCount()):
-            sum += int(self.table.item(self.combobox.currentIndex(), i).text())
-        sum /= self.table.columnCount()
-        return str(sum)
+            if self.table.item(self.combobox.currentIndex(), i) is None:
+                continue
+            if self.table.item(self.combobox.currentIndex(), i).text() =="":
+                continue
+            else:
+                if int(self.table.item(self.combobox.currentIndex(), i).text()) >= 2:
+                    sum += int(self.table.item(self.combobox.currentIndex(), i).text())
+                    count += 1
+        if count == 0:
+            return "0"
+        else:
+            sum /= count
+            return str(sum)
+
+    def redraw(self):
+        if self.table.item(self.combobox.count(), 0) is not None:
+            self.combobox.addItem(self.table.item(self.combobox.count(), 0).text())
+        else:
+            for i in range(self.combobox.count()):
+                if self.table.item(i, 0).text() != self.combobox.itemText(i):
+                    self.combobox.setItemText(i, self.table.item(i, 0).text())
+                    break
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
