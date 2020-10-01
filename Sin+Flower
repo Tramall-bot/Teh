@@ -1,0 +1,115 @@
+#define _USE_MATH_DEFINES
+#include<Windows.h>
+#include<tchar.h>
+#include <cmath>
+
+LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+const int WIDTH = 314;
+const int HEIGHT = 200;
+const double K = 4.0;
+//==================================================================================
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+	HWND hMainWnd;
+	TCHAR szClassName[] = _T("MyClass");
+	MSG msg;
+	WNDCLASSEX wc;
+	//Заполняем структуру класса окна
+	wc.cbSize = sizeof(wc);
+	wc.style = CS_HREDRAW | CS_VREDRAW;
+	wc.lpfnWndProc = WndProc;
+	wc.cbClsExtra = 0;
+	wc.cbWndExtra = 0;
+	wc.hInstance = hInstance;
+	wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+	wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+	wc.lpszMenuName = NULL;
+	wc.lpszClassName = szClassName;
+	wc.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
+	//Регистрируем класс окна
+	if (!RegisterClassExW(&wc)) {
+		MessageBoxW(NULL, _T("Cannot registr class"), _T("Error"), MB_OK);
+		return 0;
+	}
+	//Создаем основное окно приложения
+	hMainWnd = CreateWindow(szClassName, _T("A Hello1 Application"), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL,
+		hInstance, NULL);
+
+	if (!hMainWnd) {
+		MessageBox(NULL, _T("Cannot create main window"), _T("Error"), MB_OK);
+		return 0;
+	}
+	//Показываем окно
+	ShowWindow(hMainWnd, nCmdShow);
+	//UpdateWindow(hMainWnd);
+	//Выполняем цикл обработки сообщений до закрытия окна
+	while (GetMessage(&msg, NULL, 0, 0)) {
+		TranslateMessage(&msg);
+		DispatchMessageW(&msg);
+	}
+	return 0;
+}
+LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam,
+
+	LPARAM lParam) {
+	HDC hdc;
+	PAINTSTRUCT ps;
+	RECT rect;
+	int x_scr, y_scr;
+	static HPEN hpen1, hpen2;
+	static int sx, sy;
+	double x;
+	switch (uMsg) {
+	case WM_CREATE:
+		hpen1 = CreatePen(PS_SOLID, 2, RGB(0, 0, 255));
+		hpen2 = CreatePen(PS_SOLID, 2, RGB(255, 0, 0));
+		break;
+	case WM_SIZE:
+		sx = LOWORD(lParam);
+		sy = HIWORD(lParam);
+		break;
+	case WM_PAINT:
+		hdc = BeginPaint(hWnd, &ps);
+		SetMapMode(hdc, MM_ANISOTROPIC);
+		SetWindowExtEx(hdc, 2*WIDTH, -2*HEIGHT, NULL);
+		SetViewportExtEx(hdc, sx / 2, sy / 2, NULL);
+		SetViewportOrgEx(hdc, sx / 4, sy / 4, NULL);
+		SelectObject(hdc, hpen1); 
+		MoveToEx(hdc, -WIDTH, 0, NULL); 
+		LineTo(hdc, WIDTH, 0);
+		MoveToEx(hdc,0, HEIGHT, NULL);
+		LineTo(hdc, 0, -HEIGHT);
+		SelectObject(hdc, hpen2); 
+		MoveToEx(hdc, -WIDTH, 0, NULL);
+		for (x = -M_PI, x_scr = -WIDTH; x < M_PI; x += 0.03, x_scr += 3)
+		{
+			y_scr = HEIGHT * sin(x);
+			LineTo(hdc, x_scr, y_scr);
+		}
+		SetViewportOrgEx(hdc, sx * 3 / 4, sy / 4, NULL);
+		SelectObject(hdc, GetStockObject(BLACK_PEN));
+		MoveToEx (hdc, -WIDTH, 0, NULL); 
+		LineTo(hdc, WIDTH, 0);
+		MoveToEx(hdc, 0, HEIGHT, NULL);
+		LineTo(hdc, 0, -HEIGHT);
+		SelectObject(hdc, hpen1); //Cmee nepo
+		MoveToEx(hdc, 0, 0, NULL); 
+		for (double angle = 0.0; angle < 2 * M_PI; angle += 0.02)
+		{ 
+			x_scr = HEIGHT * sin(K * angle) * cos(angle);
+			y_scr = HEIGHT * sin(K * angle) * sin(angle);
+			LineTo(hdc, x_scr, y_scr);
+		}
+		EndPaint(hWnd, &ps);
+		break;
+	case WM_DESTROY:
+		DeleteObject(hpen1);
+		DeleteObject(hpen2);
+		PostQuitMessage(0);
+		break;
+	default:
+		return DefWindowProc(hWnd, uMsg, wParam, lParam);
+	}
+	return 0;
+
+}
