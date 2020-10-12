@@ -8,7 +8,7 @@ class Table(QWidget):
         super().__init__(*args, **kwargs)
         self.initUi()
         self.button.clicked.connect(new_nubmer)
-        self.table.cellClicked[int, int].connect(EditNumber)
+        self.table.cellDoubleClicked[int, int].connect(EditNumber)
 
     def initUi(self):
         self.resize(self.parent().size())
@@ -21,30 +21,38 @@ class Table(QWidget):
         self.button.move(370, 20)
 
     def new_line(self, number):
-        if number == "":
+        try:
+            if number == "":
+                pass
+            else:
+                flag = True
+                i = int(number)
+                for i in range(0, self.table.rowCount() - 1):
+                    if self.table.item(i, 2) is None:
+                        self.table.setItem(i, 2, QTableWidgetItem(number))
+                        flag = False
+                        break
+                if flag:
+                    self.table.setRowCount(self.table.rowCount() + 1)
+                    self.table.setItem(self.table.rowCount() - 1, 2, QTableWidgetItem(number))
+                self.other_numbers(i, number)
+        except ValueError:
             pass
-        else:
-            flag = True
-            i = 0
-            for i in range(0, self.table.rowCount()-1):
-                if self.table.item(i, 2) is None:
-                    self.table.setItem(i, 2, QTableWidgetItem(number))
-                    flag = False
-                    break
-            if flag:
-                self.table.setRowCount(self.table.rowCount()+1)
-                self.table.setItem(self.table.rowCount()-1, 2, QTableWidgetItem(number))
-            self.other_numbers(i, number)
+
 
     def other_numbers(self, i, number):
         self.table.setItem(i, 0, QTableWidgetItem(format(int(number), "b")))
         self.table.setItem(i, 1, QTableWidgetItem(format(int(number), "X")))
 
     def Edited(self, a, b, number):
-        print(1)
-        self.table.setItem(a, 0, QTableWidgetItem(format(int(number), "b")))
-        self.table.setItem(a, 1, QTableWidgetItem(format(int(number), "X")))
-        self.table.setItem(a, 2, QTableWidgetItem(format(int(number), "d")))
+        try:
+
+            self.table.setItem(a, 0, QTableWidgetItem(format(int(number), "b")))
+            self.table.setItem(a, 1, QTableWidgetItem(format(int(number), "X")))
+            self.table.setItem(a, 2, QTableWidgetItem(format(int(number), "d")))
+        except ValueError:
+            pass
+
 
 def EditNumber(a, b):
     new = QDialog()
