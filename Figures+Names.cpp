@@ -3,9 +3,9 @@
 #include<tchar.h>
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-HPEN hRedPen, hGreenPen, hBluePen;
+HPEN hRedPen, hGreenPen, hBluePen, hOrangePen;
 HBRUSH hRedBrush, hGreenBrush, hBlueBrush, hGoldBrush;
-POINT pt[5] = { {550,40},{575,140},{500,75}, {600,75}, {525,140} };
+POINT pt[6] = { {550,40},{575,140},{500,75}, {600,75}, {525,140}, {550,40} };
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 	HWND hMainWnd;
 	TCHAR szClassName[] = _T("MyClass");
@@ -54,6 +54,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		hRedPen = CreatePen(PS_SOLID, 4, RGB(150, 0, 0));
 		hGreenPen = CreatePen(PS_SOLID, 10, RGB(0, 150, 0));
 		hBluePen = CreatePen(PS_SOLID, 20, RGB(0, 0, 150));
+		hOrangePen = CreatePen(PS_SOLID, 10, RGB(255, 165, 0));
 		hRedBrush = CreateSolidBrush(RGB(255, 120, 120));
 		hGreenBrush = CreateSolidBrush(RGB(120, 255, 120));
 		hBlueBrush = CreateSolidBrush(RGB(120, 120, 255));
@@ -78,6 +79,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		SelectPen(hdc, hBluePen);
 		SelectBrush(hdc, hBlueBrush);
 		Chord(hdc, 370, 40, 470, 140, 470, 125, 370, 125);
+		SelectPen(hdc, hOrangePen);
+		Polyline(hdc, pt, 6);
 		BeginPath(hdc);
 		Polyline(hdc, pt, 5);
 		CloseFigure(hdc);
@@ -94,6 +97,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		DeleteObject(hRedBrush);
 		DeleteObject(hGreenBrush);
 		DeleteObject(hBlueBrush);
+		DeleteObject(hOrangePen);
+		DeleteObject(hGoldBrush);
 		PostQuitMessage(0);
 		break;
 	default:
