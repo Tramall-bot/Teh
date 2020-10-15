@@ -57,6 +57,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		break;
 	case WM_PAINT:
 		hdc = BeginPaint(hWnd, &ps);
+		TextOut(hdc, 0, 0, _T("Размер графических элементов Windows Бурыкин Алексей"), 52);
 		for ( i = 0; i < NUMLINES; i++)
 		{
 			TextOut(hdc, cxChar, cyChar * (1 + i), sysmetrics[i].szLabel, _tcslen(sysmetrics[i].szLabel));
