@@ -44,19 +44,35 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	HDC hdc;
 	PAINTSTRUCT ps;
 	static double step;
+	static bool start;
 	TCHAR str[256];
 	int d;
 	switch (uMsg) {
 	case WM_CREATE:
 		SetTimer(hWnd, 1, 1000, NULL);
+		start = false;
 		break;
 	case WM_TIMER:
-		step += 0.0333333333333;
-		InvalidateRect(hWnd, NULL, TRUE);
+		if (start) {
+			step += 0.0333333333333;
+			InvalidateRect(hWnd, NULL, TRUE);
+		}
 		break;
 	case WM_SIZE:
 		sx = LOWORD(lParam);
 		sy = HIWORD(lParam);
+		break;
+	case WM_RBUTTONDOWN:
+		step = 0.0;
+		break;
+	case WM_LBUTTONDOWN:
+		start = true;
+		break;
+	case WM_CHAR:
+		start = false;
+		break;
+	case WM_SYSKEYDOWN:
+		start = false;
 		break;
 	case WM_PAINT:
 		hdc = BeginPaint(hWnd, &ps);
@@ -68,6 +84,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			_stprintf(str, _T("%d"), d);
 			TextOut(hdc, 105 * sin(3.14 * i) - 5, -105 * cos(3.14 * i) - 10, str, _tcslen(str));
 		}
+		if(start)
 		LineTo(hdc, 100 * sin(3.14 * step), -100 * cos(3.14 * step));
 		EndPaint(hWnd, &ps);
 		break;
