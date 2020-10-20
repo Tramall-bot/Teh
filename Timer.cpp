@@ -82,10 +82,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		{
 			d+=5;
 			_stprintf(str, _T("%d"), d);
-			TextOut(hdc, 105 * sin(3.14 * i) - 5, -105 * cos(3.14 * i) - 10, str, _tcslen(str));
+			TextOut(hdc, 230 * sin(3.14 * i) - 10, -230 * cos(3.14 * i) - 10, str, _tcslen(str));
 		}
 		if(start)
-		LineTo(hdc, 100 * sin(3.14 * step), -100 * cos(3.14 * step));
+		LineTo(hdc, 220 * sin(3.14 * step), -220 * cos(3.14 * step));
 		EndPaint(hWnd, &ps);
 		break;
 	case WM_DESTROY:
