@@ -163,10 +163,6 @@ class MyWindow(QWidget):
 
 
 if __name__ == '__main__':
-    # a = obertka()
-    # a.crateTable("base", {"date": "text", "trans": "text"})
-    # #a.InsertValues("base", ['2015-02-11', 'BUY'])
-    # print(a.getTable("base"))
     qapp = QApplication(sys.argv)
     main = QMainWindow()
     w= MyWindow(main)
