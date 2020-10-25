@@ -99,24 +99,74 @@ class obertka:
         return headers
 
 
+class FileTableModel(QAbstractTableModel):
+    def __init__(self, parent, *args):
+        QAbstractTableModel.__init__(self, parent, *args)
+        self.f = open("text_db.txt", "r+")
+
+    def rowCount(self, parent=QModelIndex()):
+        return 2
+
+    def columnCount(self, parent=QModelIndex()):
+        return 2
+
+    def data(self, index, role=Qt.DisplayRole):
+        column = index.column()
+        row = index.row()
+        if role != Qt.DisplayRole:
+            return None
+        self.f.seek(100 * column + 200 * row, 0)
+        return self.f.read(100)
+
+    def flags(self, index):
+        return Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsEditable
+
+    def setData(self, index, value, role=Qt.EditRole):
+        if role == Qt.EditRole:
+            row = index.row()
+            column = index.column()
+            print("da")
+            print(column)
+            print(row)
+            self.f.seek(100 * column + 200 * row, 0)
+            self.f.write(str(value) + '\0' * len(str(value)))
+            return True
+
 class MyWindow(QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.initUi()
-
+        self.checkbox.stateChanged.connect(self.change)
 
     def initUi(self):
         self.resize(self.parent().size())
         self.tableview = QTableView(self)
         self.tableview.setModel(CustomTableModel("base", self))
         self.tableview.setGeometry(10, 30, 320, 200)
-        self.table.setGeometry(10,30, 320, 200)
+        self.tablefile = QTableView(self)
+        self.tablefile.setModel(FileTableModel(self))
+        self.tablefile.setGeometry(10, 30, 320, 200)
+        self.tablefile.hide()
         self.checkbox = QCheckBox(self)
         self.checkbox.move(350, 50)
+        self.check = True
 
+    def change(self):
+        if self.check:
+            self.tableview.hide()
+            self.tablefile.show()
+
+        else:
+            self.tablefile.hide()
+            self.tableview.show()
+        self.check = not self.check
 
 
 if __name__ == '__main__':
+    # a = obertka()
+    # a.crateTable("base", {"date": "text", "trans": "text"})
+    # #a.InsertValues("base", ['2015-02-11', 'BUY'])
+    # print(a.getTable("base"))
     qapp = QApplication(sys.argv)
     main = QMainWindow()
     w= MyWindow(main)
