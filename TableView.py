@@ -132,6 +132,37 @@ class FileTableModel(QAbstractTableModel):
             self.f.write(str(value) + '\0' * len(str(value)))
             return True
 
+    def __repr__(self):
+        string = "++"
+
+        for i in range(2):
+            for j in range(9):
+                string += "-"
+
+            string += "++"
+        string += "\n"
+        for i in range(2):
+            for j in range(2):
+                string += "|"
+                self.f.seek(i*200 + j*100, 0)
+                temp = self.f.read(10)
+                k = 0
+                while k < 10:
+                    if temp[k] == "\0":
+                        string += " "
+                    string += temp[k]
+                    k += 1
+                string += "|"
+            string += "\n"
+            string += "++"
+            for j in range(2):
+                for k in range(9):
+                    string += "-"
+                string += "++"
+            string += "\n"
+        return string
+
+
 class MyWindow(QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -140,25 +171,20 @@ class MyWindow(QWidget):
 
     def initUi(self):
         self.resize(self.parent().size())
-        self.tableview = QTableView(self)
-        self.tableview.setModel(CustomTableModel("base", self))
-        self.tableview.setGeometry(10, 30, 320, 200)
-        self.tablefile = QTableView(self)
-        self.tablefile.setModel(FileTableModel(self))
-        self.tablefile.setGeometry(10, 30, 320, 200)
-        self.tablefile.hide()
+        self.tableview = CustomTableModel("base", self)
+        self.tablefile = FileTableModel(self)
+        self.showtable = QTableView(self)
+        self.showtable.setModel(self.tableview)
+        self.showtable.setGeometry(10, 30, 320, 200)
         self.checkbox = QCheckBox(self)
         self.checkbox.move(350, 50)
         self.check = True
 
     def change(self):
         if self.check:
-            self.tableview.hide()
-            self.tablefile.show()
-
+            self.showtable.setModel(self.tablefile)
         else:
-            self.tablefile.hide()
-            self.tableview.show()
+            self.showtable.setModel(self.tableview)
         self.check = not self.check
 
 
@@ -166,5 +192,6 @@ if __name__ == '__main__':
     qapp = QApplication(sys.argv)
     main = QMainWindow()
     w= MyWindow(main)
+    print(w.tablefile)
     main.show()
     qapp.exec()
