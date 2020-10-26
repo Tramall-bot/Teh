@@ -1,4 +1,3 @@
-
 import sqlite3
 import sys
 from PyQt5.QtCore import Qt, QAbstractTableModel, QModelIndex, QVariant
@@ -9,19 +8,20 @@ from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtWidgets import QTableView
 from PyQt5.QtWidgets import QWidget,QCheckBox, QTableWidget, QTableWidgetItem
+import os.path
 
 class CustomTableModel(QAbstractTableModel):
     def __init__(self, TableName: str, parent, *args):
         QAbstractTableModel.__init__(self, parent, *args)
-        self.db = obertka()
+        self.db = Obertka()
         self.table_name = TableName
         self.head_name = self.db.getHeader(self.table_name)
 
     def rowCount(self, parent=QModelIndex()):
-        return len(self.db.getTable(self.table_name)[0])
+        return len(self.db.getTable(self.table_name))
 
     def columnCount(self, parent=QModelIndex()):
-        return len(self.db.getTable(self.table_name))
+        return len(self.db.getTable(self.table_name)[0])
 
     def headerData(self, p_int, Qt_Orientation, int_role=None):
         if int_role == Qt.DisplayRole and Qt_Orientation == Qt.Horizontal:
@@ -46,7 +46,7 @@ class CustomTableModel(QAbstractTableModel):
             self.db.set(self.table_name, row+1, self.head_name[column], value)
             return True
 
-class obertka:
+class Obertka:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.conn = sqlite3.connect("test.db")
@@ -98,25 +98,86 @@ class obertka:
             headers.append(head[0].upper())
         return headers
 
+class FileDB:
+    def __init__(self, name):
+        self.filename = name
+        self.f = open(self.filename, 'r+')
+
+    def data(self, column, row):
+        self.f.seek(100 * column + 400 * row, 0)
+        return self.f.read(100)
+
+    def rowCount(self):
+        return os.path.getsize(self.filename)/400
+
+    def columnCount(self):
+        return 4
+
+    def setdata(self, column, row, value):
+        self.f.seek(100 * column + 400 * row, 0)
+        self.f.write(str(value)[0:99] + '\0' * (100 - len(str(value))))
+
+    def __repr__(self):
+        max_size = 0
+        for i in range(int(os.path.getsize(self.filename) / 100)):
+            self.f.seek(i * 100, 0)
+            temp = self.f.read(100)
+            j = 0
+            temp_size = 0
+            while temp[j] != "\0":
+                temp_size += 1
+                j += 1
+            if temp_size > max_size:
+                max_size = temp_size
+        string = "++"
+        for i in range(4):
+            for j in range(max_size):
+                string += "-"
+
+            string += "++"
+        string += "\n"
+        for i in range(int(self.rowCount())):
+            string += "|"
+            for j in range(int(self.columnCount())):
+                string += "|"
+                self.f.seek(i * 400 + j * 100, 0)
+                temp = self.f.read(max_size)
+                k = 0
+                while k < max_size:
+                    if temp[k] == "\0":
+                        string += " "
+                    string += temp[k]
+                    k += 1
+                string += "|"
+            string += "|"
+            string += "\n"
+            string += "++"
+            for j in range(4):
+                for k in range(max_size):
+                    string += "-"
+                string += "++"
+            string += "\n"
+        return string
 
 class FileTableModel(QAbstractTableModel):
-    def __init__(self, parent, *args):
+    def __init__(self,name, filedb, parent, *args):
         QAbstractTableModel.__init__(self, parent, *args)
-        self.f = open("text_db.txt", "r+")
+        self.filename = name
+        self.db = filedb
+        self.f = open(self.filename, "r+")
 
     def rowCount(self, parent=QModelIndex()):
-        return 2
+        return self.db.rowCount()
 
     def columnCount(self, parent=QModelIndex()):
-        return 2
+        return 4
 
     def data(self, index, role=Qt.DisplayRole):
         column = index.column()
         row = index.row()
         if role != Qt.DisplayRole:
             return None
-        self.f.seek(100 * column + 200 * row, 0)
-        return self.f.read(100)
+        return self.db.data(column, row)
 
     def flags(self, index):
         return Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsEditable
@@ -125,42 +186,11 @@ class FileTableModel(QAbstractTableModel):
         if role == Qt.EditRole:
             row = index.row()
             column = index.column()
-            print("da")
-            print(column)
-            print(row)
-            self.f.seek(100 * column + 200 * row, 0)
-            self.f.write(str(value) + '\0' * len(str(value)))
+            self.db.setdata(column, row, value)
             return True
 
     def __repr__(self):
-        string = "++"
-
-        for i in range(2):
-            for j in range(9):
-                string += "-"
-
-            string += "++"
-        string += "\n"
-        for i in range(2):
-            for j in range(2):
-                string += "|"
-                self.f.seek(i*200 + j*100, 0)
-                temp = self.f.read(10)
-                k = 0
-                while k < 10:
-                    if temp[k] == "\0":
-                        string += " "
-                    string += temp[k]
-                    k += 1
-                string += "|"
-            string += "\n"
-            string += "++"
-            for j in range(2):
-                for k in range(9):
-                    string += "-"
-                string += "++"
-            string += "\n"
-        return string
+        return self.db.__repr__()
 
 
 class MyWindow(QWidget):
@@ -168,17 +198,21 @@ class MyWindow(QWidget):
         super().__init__(*args, **kwargs)
         self.initUi()
         self.checkbox.stateChanged.connect(self.change)
+        self.button.clicked.connect(self.printfile)
 
     def initUi(self):
         self.resize(self.parent().size())
-        self.tableview = CustomTableModel("base", self)
-        self.tablefile = FileTableModel(self)
+        self.tableview = CustomTableModel("abc", self)
+        self.filedb = FileDB("test_db.txt")
+        self.tablefile = FileTableModel("test_db.txt",self.filedb, self)
         self.showtable = QTableView(self)
         self.showtable.setModel(self.tableview)
         self.showtable.setGeometry(10, 30, 320, 200)
         self.checkbox = QCheckBox(self)
         self.checkbox.move(350, 50)
         self.check = True
+        self.button = QPushButton(self)
+        self.button.move(350, 80)
 
     def change(self):
         if self.check:
@@ -187,11 +221,12 @@ class MyWindow(QWidget):
             self.showtable.setModel(self.tableview)
         self.check = not self.check
 
+    def printfile(self):
+        print(self.tablefile)
 
 if __name__ == '__main__':
     qapp = QApplication(sys.argv)
     main = QMainWindow()
     w= MyWindow(main)
-    print(w.tablefile)
     main.show()
     qapp.exec()
