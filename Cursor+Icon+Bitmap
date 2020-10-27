@@ -1,0 +1,87 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include<Windows.h>
+#include<cmath>
+#include<tchar.h>
+
+int sx, sy;
+TCHAR szAppName[] = _T("resors");
+HINSTANCE hInst;
+LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+	HWND hMainWnd;
+	MSG msg;
+	HBITMAP hBitmap;
+	HBRUSH hBrush;
+	WNDCLASSEX wc;
+	hBitmap = LoadBitmap(hInstance, szAppName);
+	hBrush = CreatePatternBrush(hBitmap);
+	hInst = hInstance;
+	wc.cbSize = sizeof(wc);
+	wc.style = CS_HREDRAW | CS_VREDRAW;
+	wc.lpfnWndProc = WndProc;
+	wc.cbClsExtra = 0;
+	wc.cbWndExtra = 0;
+	wc.hInstance = hInstance;
+	wc.hIcon = LoadIcon(hInstance, _T("resors1"));
+	wc.hCursor = LoadCursor(hInstance, szAppName);
+	wc.hbrBackground = hBrush;
+	wc.lpszMenuName = NULL;
+	wc.lpszClassName = szAppName;
+	wc.hIconSm = LoadIcon(hInstance, _T("resors1"));
+	if (!RegisterClassExW(&wc)) {
+		MessageBoxW(NULL, _T("Cannot registr class"), _T("Error"), MB_OK);
+		return 0;
+	}
+	hMainWnd = CreateWindow(szAppName, _T("A Hello1 Application"), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL,
+		hInstance, NULL);
+
+	if (!hMainWnd) {
+		MessageBox(NULL, _T("Cannot create main window"), _T("Error"), MB_OK);
+		return 0;
+	}
+	ShowWindow(hMainWnd, nCmdShow);
+	while (GetMessage(&msg, NULL, 0, 0)) {
+		TranslateMessage(&msg);
+		DispatchMessageW(&msg);
+	}
+
+	DeleteObject(hBrush);
+	DeleteObject(hBitmap);
+	return msg.wParam;
+}
+LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+	static HICON hIcon;
+	static int cxIcon, cyIcon, cxClient, cyClient;
+	HDC hdc;
+	int x, y;
+	PAINTSTRUCT ps;
+	switch (uMsg) {
+	case WM_CREATE:
+		hIcon = LoadIcon(hInst, _T("resors1"));
+		cxIcon = GetSystemMetrics(SM_CXICON);
+		cyIcon = GetSystemMetrics(SM_CYICON);
+		break;
+	case WM_SIZE:
+		cxClient = LOWORD(lParam);
+		cyClient = HIWORD(lParam);
+		break;
+	case WM_PAINT:
+		hdc = BeginPaint(hWnd, &ps);
+		for (y = cyIcon; y < cyClient; y += 2 * cyIcon)
+		{
+			for (x = cxIcon; x < cxClient; x += 2 * cxIcon)
+			{
+				DrawIcon(hdc, x, y, hIcon);
+			}
+		}
+		EndPaint(hWnd, &ps);
+		break;
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		break;
+	default:
+		return DefWindowProc(hWnd, uMsg, wParam, lParam);
+	}
+	return 0;
+
+}
