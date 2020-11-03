@@ -1,0 +1,62 @@
+#define DIVISIONS 5
+#define MoveTo(hdc, x, y) MoveToEx(hdc, x, y, NULL)
+#include<Windows.h>
+#include<tchar.h>
+
+
+LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+	HWND hWnd;
+	WNDCLASSEX wc;
+	MSG msg;
+	ZeroMemory(&wc, sizeof(wc));
+	wc.cbSize = sizeof(wc);
+	wc.style = CS_HREDRAW | CS_VREDRAW;
+	wc.lpfnWndProc = WndProc;
+	wc.cbClsExtra = 0;
+	wc.cbWndExtra = 0;
+	wc.hInstance = hInstance;
+	wc.hIcon = LoadIcon(hInstance, _T("Ex_Icon"));
+	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+	wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+	wc.lpszMenuName = _T("Ex_Menu");
+	wc.lpszClassName = _T("MainWnd Class");
+	wc.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
+	if (!RegisterClassEx(&wc)) return FALSE;
+
+	hWnd = CreateWindow(_T("MainWnd Class"), _T("4"), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL,
+		hInstance, NULL);
+	if (!hWnd) return FALSE;
+	ShowWindow(hWnd, nCmdShow);
+	UpdateWindow(hWnd);
+	while (GetMessage(&msg, NULL, 0, 0)) {
+		TranslateMessage(&msg);
+		DispatchMessageW(&msg);
+	}
+	return msg.wParam;
+}
+LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+	switch (uMsg) {
+	case WM_CREATE:
+		CreateWindow(_T("button"), _T("My button"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 5, 5, 100, 20, hWnd, (HMENU)1, NULL, NULL);
+		break;
+	case WM_COMMAND:
+
+		if (HIWORD(wParam) == 0) {
+			TCHAR buf[256];
+			switch (LOWORD(wParam)) {
+			case 6:
+				PostQuitMessage(0);
+			default:
+				wsprintf(buf, _T("Command code: %d"), LOWORD(wParam));
+				MessageBox(hWnd, buf, _T("Message Box"), MB_OK | MB_ICONINFORMATION);
+			}
+		}		break;
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		break;
+	default:
+		return DefWindowProc(hWnd, uMsg, wParam, lParam);
+	}
+	return 0;
+}
