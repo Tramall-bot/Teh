@@ -54,7 +54,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	HBITMAP hBitmap;
 	static HDC memBit;
 	static BITMAP bm;
-	static int cx, cy, border, caption;
+	static border, caption;
 	switch (uMsg) {
 	case WM_CREATE:
 		caption = GetSystemMetrics(SM_CYCAPTION);
@@ -73,8 +73,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		break;
 	case WM_SIZE:
 		MoveWindow(hwnd, 100, 50, bm.bmWidth + 2 * border, bm.bmHeight + caption + border, TRUE);
-		cx = LOWORD(lParam);
-		cy = HIWORD(lParam);
 		break;
 	case WM_PAINT:
 		hdc = BeginPaint(hwnd, &ps);
