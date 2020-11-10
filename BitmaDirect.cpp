@@ -54,7 +54,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	HBITMAP hBitmap;
 	static HDC memBit;
 	static BITMAP bm;
-	static border, caption;
+	static int border, caption;
 	switch (uMsg) {
 	case WM_CREATE:
 		caption = GetSystemMetrics(SM_CYCAPTION);
