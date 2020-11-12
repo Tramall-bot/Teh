@@ -26,7 +26,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	wc.lpszClassName = szClassName;
 	wc.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
 	RegisterClassEx(&wc);
-	hWnd = CreateWindow(szClassName, szClassName, WS_OVERLAPPEDWINDOW, 100, 100, 300, 530, NULL, NULL,
+	hWnd = CreateWindow(szClassName, szClassName, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL,
 		hInstance, NULL);
 
 	ShowWindow(hWnd, nCmdShow);
