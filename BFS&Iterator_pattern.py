@@ -6,16 +6,19 @@ class Node:
     def __init__(self, text):
         self.node = dict()
         self.len = text.__len__()
+        self.text = text
+
+    def getNodes(self):
         self.error = False
         for i in range(self.len):
-            if text[i] == "(":
+            if self.text[i] == "(":
                 k = i+1
                 while True:
                     try:
-                        if text[k] == ")" or text[k] == "(":
+                        if self.text[k] == ")" or self.text[k] == "(":
                             break
                         try:
-                            int(text[k])
+                            int(self.text[k])
                             break
                         except ValueError:
                             k += 1
@@ -24,14 +27,14 @@ class Node:
                 if k == self.len:
                     print("No End of Node found")
                     break
-                if text[k] == ")" or text[k] == "(":
+                if self.text[k] == ")" or self.text[k] == "(":
                     pass
                 else:
                     node = ""
                     while True:
                         try:
-                            int(text[k])
-                            node += text[k]
+                            int(self.text[k])
+                            node += self.text[k]
                             k += 1
                         except ValueError:
                             k += 1
@@ -42,12 +45,12 @@ class Node:
                             break
                     if self.error:
                         break
-                    if text[k] == ")":
+                    if self.text[k] == ")":
                         print("No second vertex")
                         break
                     while True:
                         try:
-                            int(text[k])
+                            int(self.text[k])
                             break
                         except ValueError:
                             k+= 1
@@ -55,10 +58,10 @@ class Node:
                     vertex = ""
                     while True:
                         try:
-                            int(text[k])
-                            vertex += text[k]
+                            int(self.text[k])
+                            vertex += self.text[k]
                             k += 1
-                            if text[k] == ")":
+                            if self.text[k] == ")":
                                 break
                         except ValueError:
                             self.error = True
@@ -71,7 +74,10 @@ class Node:
                             list.append(k)
                     list.append(vertex)
                     self.node[node] = list
-
+        if self.error:
+            return None
+        else:
+            return self.node
 
 
 class MyWindow(QWidget):
@@ -92,10 +98,9 @@ class MyWindow(QWidget):
 
     def GetText(self):
         a = Node(self.InputEdit.toPlainText())
-        b = NodesCollection(a.node)
-        self.OutputEdit.setText(" ".join(b))
+        self.OutputEdit.setText(" ".join(NodesCollection(a.getNodes())))
 
-class AlphabeticalOrderIterator(Iterator):
+class NodeIterator(Iterator):
     def __init__(self, collection) -> None:
         self.collection = collection
         self.visited = set()
@@ -133,11 +138,11 @@ class NodesCollection(Iterable):
     def __init__(self, collection) -> None:
         self._collection = collection
 
-    def __iter__(self) -> AlphabeticalOrderIterator:
-        return AlphabeticalOrderIterator(self._collection)
+    def __iter__(self) -> NodeIterator:
+        return NodeIterator(self._collection)
 
-    def get_reverse_iterator(self) -> AlphabeticalOrderIterator:
-        return AlphabeticalOrderIterator(self._collection)
+    def get_reverse_iterator(self) -> NodeIterator:
+        return NodeIterator(self._collection)
 
     def add_item(self, item):
         self._collection.append(item)
