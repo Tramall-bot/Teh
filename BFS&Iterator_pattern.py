@@ -5,20 +5,73 @@ from collections.abc import Iterable, Iterator
 class Node:
     def __init__(self, text):
         self.node = dict()
-        for i in text:
-            if i == "(":
-                text = text.lstrip(i)
-                i = text[0]
-                text = text.lstrip(text[0])
-                text = text.lstrip(text[0])
-                list = []
-                if i in self.node.keys():
-                    for k in self.node[i]:
-                        list.append(k)
-                list.append(text[0])
-                self.node[i] = list
-                text = text.lstrip(text[0])
-            text = text.lstrip(i)
+        self.len = text.__len__()
+        self.error = False
+        for i in range(self.len):
+            if text[i] == "(":
+                k = i+1
+                while True:
+                    try:
+                        if text[k] == ")" or text[k] == "(":
+                            break
+                        try:
+                            int(text[k])
+                            break
+                        except ValueError:
+                            k += 1
+                    except IndexError:
+                        break
+                if k == self.len:
+                    print("No End of Node found")
+                    break
+                if text[k] == ")" or text[k] == "(":
+                    pass
+                else:
+                    node = ""
+                    while True:
+                        try:
+                            int(text[k])
+                            node += text[k]
+                            k += 1
+                        except ValueError:
+                            k += 1
+                            break
+                        except IndexError:
+                            print("First vertex didn't end")
+                            self.error = True
+                            break
+                    if self.error:
+                        break
+                    if text[k] == ")":
+                        print("No second vertex")
+                        break
+                    while True:
+                        try:
+                            int(text[k])
+                            break
+                        except ValueError:
+                            k+= 1
+                    list = []
+                    vertex = ""
+                    while True:
+                        try:
+                            int(text[k])
+                            vertex += text[k]
+                            k += 1
+                            if text[k] == ")":
+                                break
+                        except ValueError:
+                            self.error = True
+                            print("Неправильный ввод ребра")
+                            break
+                    if self.error:
+                        break
+                    if node in self.node.keys():
+                        for k in self.node[node]:
+                            list.append(k)
+                    list.append(vertex)
+                    self.node[node] = list
+
 
 
 class MyWindow(QWidget):
@@ -34,7 +87,7 @@ class MyWindow(QWidget):
         self.OutputEdit = QTextEdit(self)
         self.OutputEdit.setGeometry(165, 50, 120, 20)
         self.button = QPushButton(self)
-        #self.button.setGeometry(175, 100, 100, 30)
+        self.button.setGeometry(175, 100, 100, 30)
         self.button.setText("Вывести вершины")
 
     def GetText(self):
@@ -46,7 +99,7 @@ class AlphabeticalOrderIterator(Iterator):
     def __init__(self, collection) -> None:
         self.collection = collection
         self.visited = set()
-        self.nodecount = -1
+        self.nodecount = 0
         self.dictlen = self.collection.__len__()
         self.nodes = []
         for i in self.collection.keys():
@@ -54,11 +107,11 @@ class AlphabeticalOrderIterator(Iterator):
         self.connection = 0
 
     def __next__(self):
-        if self.nodecount < 0:
-            self.nodecount += 1
-            value = self.nodes[self.nodecount]
-            return value
         if self.nodecount < self.dictlen:
+            if self.nodes[self.nodecount] not in self.visited:
+                value = self.nodes[self.nodecount]
+                self.visited.add(value)
+                return value
             if self.collection[self.nodes[self.nodecount]].__len__() > self.connection + 1:
                 value = self.collection[self.nodes[self.nodecount]][self.connection]
                 self.connection += 1
