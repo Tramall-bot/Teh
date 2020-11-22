@@ -1,89 +1,160 @@
-from PyQt5.QtWidgets import QApplication, QPushButton, QButtonGroup, QWidget, QMainWindow,  \
-    QLineEdit, QTableWidget, QTableWidgetItem, QDialog, QDialogButtonBox
-import sys, random
+import collections, sys
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QTextEdit, QPushButton
+from collections.abc import Iterable, Iterator
+
+class Node:
+    def __init__(self, text):
+        self.node = dict()
+        self.len = text.__len__()
+        self.text = text
+
+    def getNodes(self):
+        self.error = False
+        for i in range(self.len):
+            if self.text[i] == "(":
+                k = i+1
+                while True:
+                    try:
+                        if self.text[k] == ")" or self.text[k] == "(":
+                            break
+                        try:
+                            int(self.text[k])
+                            break
+                        except ValueError:
+                            k += 1
+                    except IndexError:
+                        break
+                if k == self.len:
+                    print("No End of Node found")
+                    break
+                if self.text[k] == ")" or self.text[k] == "(":
+                    pass
+                else:
+                    node = ""
+                    while True:
+                        try:
+                            int(self.text[k])
+                            node += self.text[k]
+                            k += 1
+                        except ValueError:
+                            k += 1
+                            break
+                        except IndexError:
+                            print("First vertex didn't end")
+                            self.error = True
+                            break
+                    if self.error:
+                        break
+                    if self.text[k] == ")":
+                        print("No second vertex")
+                        break
+                    while True:
+                        try:
+                            int(self.text[k])
+                            break
+                        except ValueError:
+                            k+= 1
+                    list = []
+                    vertex = ""
+                    while True:
+                        try:
+                            int(self.text[k])
+                            vertex += self.text[k]
+                            k += 1
+                            if self.text[k] == ")":
+                                break
+                        except ValueError:
+                            self.error = True
+                            print("Неправильный ввод ребра")
+                            break
+                    if self.error:
+                        break
+                    if node in self.node.keys():
+                        for k in self.node[node]:
+                            list.append(k)
+                    list.append(vertex)
+                    self.node[node] = list
+        if self.error:
+            return None
+        else:
+            return self.node
 
 
-class Table(QWidget):
+class MyWindow(QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.initUi()
-        self.button.clicked.connect(new_nubmer)
-        self.table.cellDoubleClicked[int, int].connect(EditNumber)
+        self.button.clicked.connect(self.GetText)
 
     def initUi(self):
         self.resize(self.parent().size())
-        self.table = QTableWidget(self)
-        self.table.setGeometry(10, 10, 320, 470)
-        self.table.setColumnCount(3)
-        self.table.setRowCount(3)
-        self.table.setHorizontalHeaderLabels(["Двоичный", "Шестнадцатеричный", "Десятичный"])
-        self.button = QPushButton("Добавить число", self)
-        self.button.move(370, 20)
+        self.InputEdit = QTextEdit(self)
+        self.InputEdit.setGeometry(50, 50, 65, 100)
+        self.OutputEdit = QTextEdit(self)
+        self.OutputEdit.setGeometry(165, 50, 120, 20)
+        self.button = QPushButton(self)
+        self.button.setGeometry(175, 100, 100, 30)
+        self.button.setText("Вывести вершины")
 
-    def new_line(self, number):
-        try:
-            if number == "":
-                pass
+    def GetText(self):
+        a = Node(self.InputEdit.toPlainText())
+        self.OutputEdit.setText(" ".join(NodesCollection(a.getNodes())))
+
+class NodeIterator(Iterator):
+    def __init__(self, collection) -> None:
+        self.collection = collection
+        self.visited = set()
+        self.nodecount = 0
+        self.dictlen = self.collection.__len__()
+        self.nodes = []
+        for i in self.collection.keys():
+            self.nodes.append(i)
+        self.connection = 0
+
+    def __next__(self):
+        if self.nodecount < self.dictlen:
+            if self.nodes[self.nodecount] not in self.visited:
+                value = self.nodes[self.nodecount]
+                self.visited.add(value)
+                return value
+            if self.collection[self.nodes[self.nodecount]].__len__() > self.connection + 1:
+                value = self.collection[self.nodes[self.nodecount]][self.connection]
+                self.connection += 1
             else:
-                flag = True
-                i = int(number)
-                for i in range(0, self.table.rowCount() - 1):
-                    if self.table.item(i, 2) is None:
-                        self.table.setItem(i, 2, QTableWidgetItem(number))
-                        flag = False
-                        break
-                if flag:
-                    self.table.setRowCount(self.table.rowCount() + 1)
-                    self.table.setItem(self.table.rowCount() - 1, 2, QTableWidgetItem(number))
-                self.other_numbers(i, number)
-        except ValueError:
-            pass
+                value = self.collection[self.nodes[self.nodecount]][self.connection]
+                self.connection = 0
+                self.nodecount += 1
+        else:
+            raise StopIteration()
+        if value not in self.visited:
+            self.visited.add(value)
+            return value
+        else:
+            return ""
 
 
-    def other_numbers(self, i, number):
-        self.table.setItem(i, 0, QTableWidgetItem(format(int(number), "b")))
-        self.table.setItem(i, 1, QTableWidgetItem(format(int(number), "X")))
+class NodesCollection(Iterable):
 
-    def Edited(self, a, b, number):
-        try:
+    def __init__(self, collection) -> None:
+        self._collection = collection
 
-            self.table.setItem(a, 0, QTableWidgetItem(format(int(number), "b")))
-            self.table.setItem(a, 1, QTableWidgetItem(format(int(number), "X")))
-            self.table.setItem(a, 2, QTableWidgetItem(format(int(number), "d")))
-        except ValueError:
-            pass
+    def __iter__(self) -> NodeIterator:
+        return NodeIterator(self._collection)
+
+    def get_reverse_iterator(self) -> NodeIterator:
+        return NodeIterator(self._collection)
+
+    def add_item(self, item):
+        self._collection.append(item)
 
 
-def EditNumber(a, b):
-    new = QDialog()
-    button = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, new)
-    line = QLineEdit(new)
-    new.resize(200, 100)
-    button.move(30, 50)
-    line.move(50, 20)
-    button.accepted.connect(lambda: j.Edited(a, b, line.text()))
-    button.accepted.connect(lambda: new.close())
-    button.rejected.connect(lambda: new.close())
-    new.show()
-    new.exec_()
 
-def new_nubmer():
-    new = QDialog()
-    button = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, new)
-    line = QLineEdit(new)
-    new.resize(200, 100)
-    button.move(30, 50)
-    line.move(50, 20)
-    button.accepted.connect(lambda: j.new_line(line.text()))
-    button.accepted.connect(lambda: new.close())
-    button.rejected.connect(lambda: new.close())
-    new.show()
-    new.exec_()
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    main_windows = QMainWindow()
-    j = Table(main_windows)
-    main_windows.resize(500, 500)
-    main_windows.show()
-    app.exec_()
+     qapp = QApplication(sys.argv)
+     main = QMainWindow()
+     window = MyWindow(main)
+     main.resize(500, 500)
+     main.show()
+     qapp.exec()
+
