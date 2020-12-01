@@ -1,0 +1,25 @@
+// dllmain.cpp : Определяет точку входа для приложения DLL.
+#include "framework.h"
+_declspec(dllexport) BOOL WINAPI Triangle(HDC, POINT*);
+BOOL APIENTRY DllMain( HMODULE hModule,
+                       DWORD  ul_reason_for_call,
+                       LPVOID lpReserved
+                     )
+{
+    switch (ul_reason_for_call)
+    {
+    case DLL_PROCESS_ATTACH:
+    case DLL_THREAD_ATTACH:
+    case DLL_THREAD_DETACH:
+    case DLL_PROCESS_DETACH:
+        break;
+    }
+    return TRUE;
+}
+BOOL WINAPI Triangle(HDC hdc, POINT* pt)
+{
+    MoveToEx(hdc, pt[0].x, pt[0].y, NULL);
+    LineTo(hdc, pt[1].x, pt[1].y);
+    LineTo(hdc, pt[2].x, pt[2].y);
+    return LineTo(hdc, pt[0].x, pt[0].y);
+}
