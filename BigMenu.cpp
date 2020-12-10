@@ -3,7 +3,7 @@
 #include "menudemo.h" // хедер, в котором объявлены замены индефекаторов со слов на цифры
 
 HBRUSH hBlueBrush, hYellowBrush; // глобальное объявление синей и жёлтой кисточки
-
+BOOL CALLBACK MenuDlgProc(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK WndProc(
 	HWND, // дескритор от главного окна
 	UINT, // структура MSG от главного окна
@@ -27,7 +27,7 @@ int WINAPI WinMain( // объявление главного окна
 	wc.cbClsExtra = 0; // дополнительные
 	wc.cbWndExtra = 0; // данные
 	wc.hInstance = hInstance; // дескриптор класса
-	wc.hIcon = LoadIcon(NULL, IDI_APPLICATION); //Стандартная иконка
+	wc.hIcon = LoadIcon(NULL, _T("MenuAbout")); //Стандартная иконка
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW); //Стандартный курсор
 	wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH); //
 	wc.lpszMenuName = _T("menudemo"); // Имя меню
@@ -68,7 +68,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) { /
 	static int iColorID[5] = { WHITE_BRUSH, LTGRAY_BRUSH, GRAY_BRUSH,
 		DKGRAY_BRUSH, BLACK_BRUSH }; // объявления цветов, на которые будет меняться фон при выборе пунктов меню
 	static int iSelection = IDM_WHITE; //Стандартный цвет, использующийся для вычесления выбранного цвета
+	static HINSTANCE hInstance;
 	switch (uMsg) { // switch для правильно обработки сообщения
+	case WM_CREATE:
+		hInstance = ((LPCREATESTRUCT)lParam)->hInstance;
+		break;
 	case WM_COMMAND: // case, вызванный выбором пункта меню
 		hMenu = GetMenu(hWnd); // получения контекста меню
 		switch (LOWORD(wParam)) // switch, для правильной обработки сообщения, полученного от меню
@@ -116,7 +120,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) { /
 			MessageBox(hWnd, _T("No Help"), _T("menudemo"), MB_ICONEXCLAMATION | MB_OK); // диалоговое окно для пункта help
 			return 0; 
 		case IDM_ABOUT: // сообщение об открытии дополнительной информации о программе
-			MessageBox(hWnd, _T("Menu Demonstration"), _T("menudemo"), MB_ICONEXCLAMATION | MB_OK); // диалоговое окно для пункта about
+			DialogBox(hInstance, _T("Menu_About"), hWnd, MenuDlgProc); // диалоговое окно для пункта about
 			return 0; 
 		} 
 		break; 
@@ -129,3 +133,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) { /
 	return 0; 
 	 
 } 
+
+BOOL CALLBACK MenuDlgProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam) // Функция диалогового окна About
+{
+	switch (iMsg)
+	{
+	case WM_INITDIALOG: // Инициализация диалога
+		return TRUE;
+	case WM_COMMAND: // Обработка нажатия кнопок в диалоговм окне
+		switch (LOWORD(wParam))
+		{
+		case IDOK:
+		case IDCANCEL: // Нажатие кнопки Ok или Cancel
+			EndDialog(hDlg, 0); // Завершение диалога
+			return TRUE;
+		}
+		break;
+	}
+	return FALSE;
+}
