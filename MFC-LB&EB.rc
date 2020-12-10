@@ -1,0 +1,150 @@
+//Сценарий ресурсов, созданный в Microsoft Visual C++.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Создано из ресурса TEXTINCLUDE.
+//
+#ifndef APSTUDIO_INVOKED
+#include "targetver.h"
+#endif
+#define APSTUDIO_HIDDEN_SYMBOLS
+#include "windows.h"
+#undef APSTUDIO_HIDDEN_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_RUS)
+LANGUAGE 25, 1
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Значок
+//
+
+// Значок с наименьшим значением идентификатора помещается первым, чтобы гарантировать использование
+// идентичного значка приложения для всех систем.
+
+IDI_MY2       ICON         "2.ico"
+IDI_SMALL               ICON         "small.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Меню
+//
+
+MYMENU MENU
+BEGIN
+    POPUP "&Dialog"
+    BEGIN
+        MENUITEM "&Sample Dialog",                IDM_DIALOG
+        MENUITEM "E&xit",                         IDM_EXIT
+    END
+    MENUITEM "&Help",                             IDM_HELP
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Ускоритель
+//
+
+MYMENU ACCELERATORS
+BEGIN
+    VK_F1,            IDM_HELP,              VIRTKEY
+    VK_F2,            IDM_DIALOG,            VIRTKEY
+    VK_F3,            IDM_EXIT,              VIRTKEY
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Диалоговое окно
+//
+
+SampleDialog DIALOG 18, 18, 142, 92
+STYLE   DS_MODALFRAME  | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Sample Dialog Box"
+BEGIN
+    DEFPUSHBUTTON   "Red",IDD_RED,56,45,30,14,WS_CHILD | WS_VISIBLE | WS_TABSTOP
+    PUSHBUTTON      "Green", IDD_GREEN, 96, 45, 30, 14, WS_CHILD | WS_VISIBLE | WS_TABSTOP
+    PUSHBUTTON      "Cancel", IDCANCEL, 52, 65, 37, 14, WS_CHILD | WS_VISIBLE | WS_TABSTOP
+    LISTBOX IDD_LB1 2, 10, 47, 32, LBS_NOTIFY | WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON "Select Fruit", IDD_SELFRUIT, 5, 45, 42, 14, WS_CHILD | WS_VISIBLE | WS_TABSTOP
+    PUSHBUTTON "Edit OK", IDD_EDITOK, 68, 22, 30, 14, WS_CHILD | WS_VISIBLE | WS_TABSTOP
+    EDITTEXT IDD_EB1, 68, 8, 72, 12, ES_LEFT | ES_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_BORDER | WS_TABSTOP
+END
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 163
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 55
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+1 TEXTINCLUDE
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE
+BEGIN
+    "#ifndef APSTUDIO_INVOKED\r\n"
+    "#include ""targetver.h""\r\n"
+    "#endif\r\n"
+    "#define APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#include ""windows.h""\r\n"
+    "#undef APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Таблица строк
+//
+
+STRINGTABLE
+BEGIN
+   IDC_MY2   "MY2"
+   IDS_APP_TITLE       "2"
+END
+
+#endif
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Создано из ресурса TEXTINCLUDE.
+//
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
