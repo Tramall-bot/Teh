@@ -1,4 +1,6 @@
 #include "menudemo.h"
+#include "windows.h"
+MenuAbout ICON icon1.ico
 menudemo MENU
 {
  POPUP "&File"
@@ -15,7 +17,7 @@ menudemo MENU
   MENUITEM "&Undo", IDM_UNDO
   MENUITEM SEPARATOR
   MENUITEM "Cu&t", IDM_CUT
-  MENUITEM "&Copy", IDM_COPY 
+  MENUITEM "&Copy", IDM_COPY
   MENUITEM "&Paste", IDM_PASTE
   MENUITEM "De&lete", IDM_DEL
  }
@@ -23,7 +25,7 @@ menudemo MENU
  {
   MENUITEM "&White", IDM_WHITE, CHECKED
   MENUITEM "&Lt Gray", IDM_LTGRAY
-  MENUITEM "&Gray", IDM_GRAY 
+  MENUITEM "&Gray", IDM_GRAY
   MENUITEM "&Dk Gray", IDM_DKGRAY
   MENUITEM "&Black", IDM_BLACK
  }
@@ -38,3 +40,21 @@ menudemo MENU
   MENUITEM "&About MenuDem", IDM_ABOUT
  }
 }
+
+Menu_About DIALOG 20, 20, 320, 162
+STYLE WS_POPUP | WS_DLGFRAME
+{
+	CTEXT "О программе Меню" -1, 0, 12, 320, 8
+	ICON "MenuAbout" -1, 8, 8, 0, 0
+	CTEXT "Это программа предназначена для демонтсрации работы меню" -1, 0, 36, 320, 8
+	CTEXT "У меню 5 пунктов" -1, 0, 48, 320, 8
+	CTEXT "Пункт меню 'File' предназнечен для работы с файлом, но пункты, кроме Exit, не рабочие" -1, 0, 60, 320, 8
+	CTEXT "Пункт 'Edit' предназначен для редактирования текста, но здесь он тоже не функцианирет" -1, 0, 72, 320, 8
+	CTEXT "Пункт 'Background' меняет цвет заднего фона" -1, 0, 84, 320, 8
+	CTEXT "Пункт 'Timer' предназначен для запуска и остановки невидемого таймера" -1, 0, 96, 320, 8
+	CTEXT "Пункт 'Help' представляет информацию о приложении" -1, 0, 108, 320, 8
+	CTEXT "Бурыкин Алексей, 2020" -1, 0, 120, 320, 8
+	DEFPUSHBUTTON "OK" IDOK, 156, 132, 32, 14, WS_GROUP
+}
+
+
