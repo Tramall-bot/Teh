@@ -154,6 +154,7 @@ if __name__ == '__main__':
      qapp = QApplication(sys.argv)
      main = QMainWindow()
      window = MyWindow(main)
+     main.resize(500, 500)
      main.show()
      qapp.exec()
 
