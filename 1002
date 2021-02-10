@@ -1,8 +1,5 @@
-// ConsoleApplication1.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
-//
 
 #include <iostream>
-#include <vector>
 using namespace std;
 
 
@@ -12,7 +9,7 @@ public:
     Node* nextNode;
     Node() {};
     ~Node() {
-        delete nextNode;
+        //delete nextNode;
     };
 };
 
@@ -25,11 +22,12 @@ public:
         last = NULL;
     };
     ~List() {
-        Node* currentNode = first;
+        /*Node* currentNode = first;
         do {
-            currentNode->~Node();
+
         } while (currentNode->nextNode != NULL);
         currentNode->~Node();
+        delete currentNode;*/
         delete first;
         delete last;
     };
@@ -46,20 +44,23 @@ public:
         Node* node = new Node;
         node->data = i;
         if (last == NULL)
-            last = new Node;
-        last->nextNode = node;
+            last = node;
+        else
+        {
+            last->nextNode = node;
+            last = node;
+        }
         if (first == NULL)
             first = node;
-        last = node;
     }
 
     void print() {
-           Node *currentNode = first;
+        Node* currentNode = first;
         do {
             cout << currentNode->data << " ";
             currentNode = currentNode->nextNode;
         } while (currentNode->nextNode != NULL);
-        cout<< currentNode->data << " ";
+        cout << currentNode->data << " ";
     }
 
     void insort(int i) {
@@ -94,17 +95,5 @@ int main()
     list->pushLast(5);
     list->insort(6);
     list->print();
-    
-  
+    delete list;
 }
-
-// Запуск программы: CTRL+F5 или меню "Отладка" > "Запуск без отладки"
-// Отладка программы: F5 или меню "Отладка" > "Запустить отладку"
-
-// Советы по началу работы 
-//   1. В окне обозревателя решений можно добавлять файлы и управлять ими.
-//   2. В окне Team Explorer можно подключиться к системе управления версиями.
-//   3. В окне "Выходные данные" можно просматривать выходные данные сборки и другие сообщения.
-//   4. В окне "Список ошибок" можно просматривать ошибки.
-//   5. Последовательно выберите пункты меню "Проект" > "Добавить новый элемент", чтобы создать файлы кода, или "Проект" > "Добавить существующий элемент", чтобы добавить в проект существующие файлы кода.
-//   6. Чтобы снова открыть этот проект позже, выберите пункты меню "Файл" > "Открыть" > "Проект" и выберите SLN-файл.
