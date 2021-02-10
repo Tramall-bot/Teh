@@ -1,0 +1,110 @@
+// ConsoleApplication1.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
+//
+
+#include <iostream>
+#include <vector>
+using namespace std;
+
+
+class Node {
+public:
+    int data;
+    Node* nextNode;
+    Node() {};
+    ~Node() {
+        delete nextNode;
+    };
+};
+
+class List {
+public:
+    Node* first;
+    Node* last;
+    List() {
+        first = NULL;
+        last = NULL;
+    };
+    ~List() {
+        Node* currentNode = first;
+        do {
+            currentNode->~Node();
+        } while (currentNode->nextNode != NULL);
+        currentNode->~Node();
+        delete first;
+        delete last;
+    };
+
+    void pushFront(int i) {
+        Node* node = new Node;
+        node->data = i;
+        node->nextNode = first;
+        first = node;
+        if (last == NULL)
+            last = node->nextNode;
+    }
+    void pushLast(int i) {
+        Node* node = new Node;
+        node->data = i;
+        if (last == NULL)
+            last = new Node;
+        last->nextNode = node;
+        if (first == NULL)
+            first = node;
+        last = node;
+    }
+
+    void print() {
+           Node *currentNode = first;
+        do {
+            cout << currentNode->data << " ";
+            currentNode = currentNode->nextNode;
+        } while (currentNode->nextNode != NULL);
+        cout<< currentNode->data << " ";
+    }
+
+    void insort(int i) {
+        Node* node = new Node;
+        node->data = i;
+        Node* currentNode = first;
+        while (currentNode != last)
+        {
+            if (currentNode->data < node->data and currentNode->nextNode->data > node->data) {
+                node->nextNode = currentNode->nextNode;
+                currentNode->nextNode = node;
+                break;
+            }
+            currentNode = currentNode->nextNode;
+        }
+        if (currentNode == last) {
+            last->nextNode = node;
+            last = node;
+        }
+    }
+
+    void extend(List* l) {
+        last->nextNode = l->first;
+    }
+};
+
+int main()
+{
+    List* list = new List;
+    list->pushLast(1);
+    list->pushLast(2);
+    list->pushLast(5);
+    list->insort(6);
+    list->print();
+    
+  
+}
+
+// Запуск программы: CTRL+F5 или меню "Отладка" > "Запуск без отладки"
+// Отладка программы: F5 или меню "Отладка" > "Запустить отладку"
+
+// Советы по началу работы 
+//   1. В окне обозревателя решений можно добавлять файлы и управлять ими.
+//   2. В окне Team Explorer можно подключиться к системе управления версиями.
+//   3. В окне "Выходные данные" можно просматривать выходные данные сборки и другие сообщения.
+//   4. В окне "Список ошибок" можно просматривать ошибки.
+//   5. Последовательно выберите пункты меню "Проект" > "Добавить новый элемент", чтобы создать файлы кода, или "Проект" > "Добавить существующий элемент", чтобы добавить в проект существующие файлы кода.
+//   6. Чтобы снова открыть этот проект позже, выберите пункты меню "Файл" > "Открыть" > "Проект" и выберите SLN-файл.
