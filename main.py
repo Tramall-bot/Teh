@@ -4,3 +4,4 @@ def fun(n):
         return fun(n-1)+fun(n-2)
     else:
         return n
+
